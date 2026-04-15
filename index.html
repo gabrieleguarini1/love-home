@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Love & Home - Cloud Hub</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --paper-msg: #fff9c4; /* Giallo post-it */
+            --paper-list: #e3f2fd; /* Blu chiaro */
+            --paper-cal: #f1f8e9; /* Verde chiaro */
+            --accent-color: #ff6b6b;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 { color: var(--accent-color); margin-bottom: 25px; font-size: 2rem; text-transform: uppercase; letter-spacing: 2px; }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .card {
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            position: relative;
+        }
+
+        /* Varianti colori card */
+        .msg-card { background-color: var(--paper-msg); transform: rotate(-1deg); }
+        .list-card { background-color: var(--paper-list); transform: rotate(1deg); }
+        .cal-card { background-color: var(--paper-cal); }
+
+        h2 { margin-top: 0; font-size: 1.1rem; border-bottom: 1px dashed rgba(0,0,0,0.1); padding-bottom: 10px; margin-bottom: 15px; }
+
+        /* Input e Bottoni */
+        .input-group { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
+        input, textarea {
+            padding: 10px;
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        input[type="text"] { flex-grow: 1; }
+        button {
+            padding: 10px 15px;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Liste */
+        ul { list-style: none; padding: 0; margin: 0; }
+        li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        .delete-btn { color: #ff6b6b; cursor: pointer; font-size: 1.2rem; padding-left: 10px; }
+
+        /* Stile specifico Agenda */
+        .event-item { flex-direction: column; align-items: flex-start; }
+        .event-date { font-size: 0.8rem; font-weight: bold; color: #558b2f; }
+        .event-info { display: flex; justify-content: space-between; width: 100%; }
+        
+        textarea { width: 100%; height: 100px; background: transparent; resize: none; border: none; font-family: 'Indie Flower', cursive, sans-serif; font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+
+    <h1>🏠 Love & Home</h1>
+
+    <div class="container">
+        
+        <div class="card msg-card">
+            <h2>💌 Messaggio per Te</h2>
+            <textarea id="sticky-note" placeholder="Scrivi un pensiero..." oninput="updateFirebaseNote()"></textarea>
+        </div>
+
+        <div class="card cal-card">
+            <h2>📅 Agenda Impegni</h2>
+            <div class="input-group">
+                <input type="text" id="event-title" placeholder="Cosa fare?">
+                <input type="date" id="event-date">
+                <button onclick="addEvent()">Aggiungi</button>
+            </div>
+            <ul id="event-list"></ul>
+        </div>
+
+        <div class="card list-card">
+            <h2>🛒 Lista Spesa</h2>
+            <div class="input-group">
+                <input type="text" id="item-input" placeholder="Manca qualcosa?">
+                <button onclick="addItem()">Ok</button>
+            </div>
+            <ul id="shopping-list"></ul>
+        </div>
+
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, set, onValue, push, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        // CONFIGURAZIONE: Sostituisci con i tuoi dati Firebase!
+        const firebaseConfig = {
+            apiKey: "IL_TUO_API_KEY",
+            authDomain: "IL_TUO_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://IL_TUO_PROJECT_ID-default-rtdb.firebaseio.com",
+            projectId: "IL_TUO_PROJECT_ID",
+            storageBucket: "IL_TUO_PROJECT_ID.appspot.com",
+            messagingSenderId: "...",
+            appId: "..."
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // --- Riferimenti Database ---
+        const noteRef = ref(db, 'note');
+        const listRef = ref(db, 'shoppingList');
+        const eventsRef = ref(db, 'events');
+
+        // --- FUNZIONI MESSAGGI ---
+        window.updateFirebaseNote = () => {
+            set(noteRef, document.getElementById('sticky-note').value);
+        };
+        onValue(noteRef, (snap) => {
+            document.getElementById('sticky-note').value = snap.val() || "";
+        });
+
+        // --- FUNZIONI LISTA SPESA ---
+        window.addItem = () => {
+            const el = document.getElementById('item-input');
+            if(el.value) { push(listRef, el.value); el.value = ''; }
+        };
+        window.removeItem = (id) => remove(ref(db, 'shoppingList/' + id));
+        onValue(listRef, (snap) => {
+            const listUI = document.getElementById('shopping-list');
+            listUI.innerHTML = '';
+            const data = snap.val();
+            for (let id in data) {
+                listUI.innerHTML += `<li>${data[id]} <span class="delete-btn" onclick="removeItem('${id}')">✕</span></li>`;
+            }
+        });
+
+        // --- FUNZIONI AGENDA ---
+        window.addEvent = () => {
+            const title = document.getElementById('event-title').value;
+            const date = document.getElementById('event-date').value;
+            if(title && date) {
+                push(eventsRef, { title, date });
+                document.getElementById('event-title').value = '';
+                document.getElementById('event-date').value = '';
+            }
+        };
+        window.removeEvent = (id) => remove(ref(db, 'events/' + id));
+        onValue(eventsRef, (snap) => {
+            const eventUI = document.getElementById('event-list');
+            eventUI.innerHTML = '';
+            const data = snap.val();
+            if (data) {
+                const sorted = Object.entries(data).sort((a,b) => new Date(a[1].date) - new Date(b[1].date));
+                sorted.forEach(([id, ev]) => {
+                    const d = new Date(ev.date).toLocaleDateString('it-IT', { day: '2-digit', month: 'short' });
+                    eventUI.innerHTML += `
+                        <li class="event-item">
+                            <span class="event-date">${d}</span>
+                            <div class="event-info">
+                                <span>${ev.title}</span>
+                                <span class="delete-btn" onclick="removeEvent('${id}')">✕</span>
+                            </div>
+                        </li>`;
+                });
+            }
+        });
+    </script>
+</body>
+</html>
