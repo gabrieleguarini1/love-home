@@ -7,18 +7,11 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
 
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
-    <meta name="theme-color" content="#b39ddb">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2589/2589175.png">
-
     <style>
         :root {
-            /* NUOVA PALETTE: Sfondo Viola Pastello e Accenti Viola Scuro */
-            --bg-color: #f3e5f5; /* Viola chiarissimo pastello */
-            --primary: #7e57c2;   /* Viola medio per accenti */
-            --primary-dark: #5e35b1; /* Viola scuro per bottoni */
+            --bg-color: #f3e5f5; 
+            --primary: #7e57c2;   
+            --primary-dark: #5e35b1; 
             --text-dark: #2d3436;
             --glass: rgba(255, 255, 255, 0.9);
         }
@@ -29,9 +22,8 @@
             font-family: 'Outfit', sans-serif;
             background-color: var(--bg-color);
             min-height: 100vh;
-            color: var(--text-dark);
             margin: 0;
-            padding: 20px 10px 40px 10px;
+            padding: 20px 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -39,78 +31,78 @@
 
         .container { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 15px; }
 
-        /* Card Effetto Vetro */
         .card {
             background: var(--glass);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
             border-radius: 24px;
-            padding: 20px;
-            box-shadow: 0 8px 32px rgba(126, 87, 194, 0.1); /* Ombra violacea */
+            padding: 15px;
+            box-shadow: 0 8px 32px rgba(126, 87, 194, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
-        h1 { text-align: center; color: var(--primary-dark); margin: 10px 0 20px 0; font-weight: 600; text-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        h2 { font-weight: 600; font-size: 1.1rem; margin-top: 0; display: flex; align-items: center; gap: 10px; color: var(--primary); }
+        h1 { text-align: center; color: var(--primary-dark); margin: 5px 0 15px 0; font-size: 1.5rem; }
+        h2 { font-weight: 600; font-size: 1rem; margin: 0 0 10px 0; color: var(--primary); }
 
-        textarea, input[type="text"], input[type="date"] {
-            font-family: 'Outfit', sans-serif;
-            background: rgba(255, 255, 255, 0.5);
-            border: 1px solid rgba(0, 0, 0, 0.05);
-            border-radius: 12px;
-            padding: 12px;
-            font-size: 16px;
+        textarea {
+            width: 100%; height: 80px; border-radius: 12px; border: 1px solid #eee;
+            padding: 10px; font-family: inherit; resize: none; overflow: hidden;
+        }
+
+        /* CALENDARIO FIXATO */
+        .calendar-grid { 
+            display: grid; 
+            grid-template-columns: repeat(7, 1fr); 
+            gap: 4px; 
             width: 100%;
-            transition: all 0.3s ease;
         }
-        textarea:focus, input:focus { background: white; border-color: var(--primary); }
-
-        /* MODIFICA NOTE: Niente scorrimento, altezza fissa pulita */
-        textarea#note-area {
-            height: 90px;
-            resize: none; /* Impedisce all'utente di ridimensionarlo */
-            overflow: hidden; /* RIMOSSO LO SCORRIMENTO BRUTTO */
-        }
-
-        /* Countdown Style */
-        .countdown-container { display: flex; gap: 12px; }
-        .countdown-card { 
-            flex: 1; 
-            background: white; 
-            padding: 18px; 
-            border-radius: 20px; 
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(126, 87, 194, 0.1);
-            cursor: pointer;
-            transition: transform 0.2s ease;
-        }
-        .countdown-card:active { transform: scale(0.97); }
-        .cd-title { font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: #444; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .cd-number { font-size: 2.2rem; font-weight: 600; color: var(--primary); display: block; line-height: 1; margin-bottom: 3px; }
-        .cd-label { font-size: 0.7rem; text-transform: uppercase; color: #999; font-weight: 500; letter-spacing: 0.5px; }
-
-        /* Calendario */
-        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .btn-nav { background: white; border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
-        .day-name { text-align: center; font-size: 0.7rem; font-weight: 600; color: rgba(0,0,0,0.3); text-transform: uppercase; padding-bottom: 5px; }
+        
+        .day-name { text-align: center; font-size: 0.6rem; font-weight: 600; color: #bbb; padding-bottom: 5px; }
+        
         .day { 
-            min-height: 70px; background: rgba(255, 255, 255, 0.4); border-radius: 12px; padding: 5px; 
-            font-size: 0.85rem; cursor: pointer; display: flex; flex-direction: column; transition: all 0.2s ease; border: 1px solid transparent;
+            aspect-ratio: 1 / 1.2; /* Mantiene il quadrato proporzionato */
+            background: white; 
+            border-radius: 10px; 
+            padding: 4px; 
+            font-size: 0.75rem; 
+            cursor: pointer; 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; /* FIX: L'impegno non esce dal quadrato */
+            border: 1px solid transparent;
         }
-        .day:active { background: #f3e5f5; }
-        .day.today { background: white; border: 2px solid var(--primary); box-shadow: 0 0 10px rgba(126, 87, 194, 0.15); }
+        
+        .day.today { border: 2px solid var(--primary); }
         .day.other-month { opacity: 0; pointer-events: none; }
-        .event-chip { color: white; font-size: 0.6rem; padding: 2px 5px; border-radius: 6px; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
+
+        .event-chip { 
+            color: white; 
+            font-size: 0.5rem; 
+            padding: 1px 3px; 
+            border-radius: 4px; 
+            margin-top: 1px; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; /* Mette i puntini se il testo è troppo lungo */
+            display: block;
+            width: 100%;
+        }
+
+        /* Countdown */
+        .countdown-container { display: flex; gap: 10px; }
+        .countdown-card { flex: 1; background: white; padding: 12px; border-radius: 20px; text-align: center; cursor: pointer; }
+        .cd-number { font-size: 1.6rem; font-weight: 600; color: var(--primary); display: block; }
 
         /* Modale */
         #modal-overlay, #cd-modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.4); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(5px);
         }
-        .modal { background: white; padding: 25px; border-radius: 28px; width: 92%; max-width: 380px; box-shadow: 0 15px 40px rgba(0,0,0,0.2); }
-        .btn-add { background: var(--primary-dark); color: white; border: none; border-radius: 12px; padding: 12px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 15px; font-size: 16px; box-shadow: 0 4px 12px rgba(94, 53, 177, 0.2); }
-        .btn-add:active { transform: scale(0.98); background: var(--primary); }
+        .modal { background: white; padding: 20px; border-radius: 24px; width: 90%; max-width: 350px; }
+        .btn-add { background: var(--primary-dark); color: white; border: none; border-radius: 10px; padding: 10px; width: 100%; font-weight: 600; margin-top: 10px; }
+        
+        input { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #eee; margin-bottom: 10px; }
+
+        /* Lista Spesa */
+        #shop-list li { display: flex; justify-content: space-between; background: #f8f9fa; padding: 8px; border-radius: 8px; margin-bottom: 4px; font-size: 0.9rem; }
     </style>
 </head>
 <body>
@@ -118,63 +110,63 @@
     <div class="container">
         <h1>MeriGabri 🏠</h1>
 
-        <div class="card" style="background: rgba(255, 249, 196, 0.9); box-shadow: 0 8px 32px rgba(255, 249, 196, 0.2);">
-            <h2>💌 Note Rapide</h2>
-            <textarea id="note-area" placeholder="Scrivi un pensiero dolce..."></textarea>
+        <div class="card" style="background: #fff9c4;">
+            <h2>💌 Note</h2>
+            <textarea id="note-area" placeholder="Scrivi qui..."></textarea>
         </div>
 
         <div class="card">
-            <div class="calendar-header">
-                <button class="btn-nav" onclick="changeMonth(-1)">‹</button>
-                <h2 id="current-month-display" style="color:var(--text-dark); font-size: 1rem; margin:0;">Mese Anno</h2>
-                <button class="btn-nav" onclick="changeMonth(1)">›</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <button onclick="changeMonth(-1)" style="border:none; background:none; font-size:1.2rem;">‹</button>
+                <h2 id="current-month-display" style="margin:0;">Mese</h2>
+                <button onclick="changeMonth(1)" style="border:none; background:none; font-size:1.2rem;">›</button>
             </div>
             <div class="calendar-grid" id="calendar-days"></div>
         </div>
 
         <div class="countdown-container">
             <div class="countdown-card" onclick="openCdModal(1)">
-                <div id="cd-title-1" class="cd-title">Evento 1</div>
+                <div id="cd-title-1" style="font-size:0.7rem; font-weight:600;">Evento 1</div>
                 <span id="cd-days-1" class="cd-number">0</span>
-                <span class="cd-label">Giorni rimasti</span>
+                <span style="font-size:0.6rem; color:#999;">GIORNI</span>
             </div>
             <div class="countdown-card" onclick="openCdModal(2)">
-                <div id="cd-title-2" class="cd-title">Evento 2</div>
+                <div id="cd-title-2" style="font-size:0.7rem; font-weight:600;">Evento 2</div>
                 <span id="cd-days-2" class="cd-number">0</span>
-                <span class="cd-label">Giorni rimasti</span>
+                <span style="font-size:0.6rem; color:#999;">GIORNI</span>
             </div>
         </div>
 
-        <div class="card" style="background-color: #e3f2fd; box-shadow: 0 8px 32px rgba(33, 150, 243, 0.15);">
-            <h2 style="color: #1976d2;">🛒 Lista Spesa</h2>
-            <div style="display:flex; gap:10px;"><input type="text" id="shop-input" style="flex:1;"><button class="btn-add" style="margin:0; width:auto; background:#1976d2;" onclick="addShop()">+</button></div>
-            <ul id="shop-list" style="list-style:none; padding:0; margin-top:15px;"></ul>
+        <div class="card" style="background:#e3f2fd;">
+            <h2>🛒 Spesa</h2>
+            <div style="display:flex; gap:5px;"><input type="text" id="shop-input" style="margin:0;"><button onclick="addShop()" style="padding:0 15px; border-radius:10px; border:none; background:#1976d2; color:white;">+</button></div>
+            <ul id="shop-list" style="list-style:none; padding:0; margin-top:10px;"></ul>
         </div>
     </div>
 
     <div id="modal-overlay" onclick="if(event.target == this) closeModal()">
         <div class="modal">
-            <h3 id="modal-date-title" style="margin:0 0 15px 0; color:var(--primary-dark);">Pianifica Giornata</h3>
-            <input type="text" id="event-text" placeholder="Cosa facciamo oggi?">
-            <div style="display:flex; justify-content:space-between; margin: 18px 0;">
-                <div class="color-opt" style="background:#ef5350; width:30px; height:30px; border-radius:8px; cursor:pointer;" data-color="#ef5350"></div>
-                <div class="color-opt" style="background:#42a5f5; width:30px; height:30px; border-radius:8px; cursor:pointer;" data-color="#42a5f5"></div>
-                <div class="color-opt" style="background:#66bb6a; width:30px; height:30px; border-radius:8px; cursor:pointer;" data-color="#66bb6a"></div>
-                <div class="color-opt" style="background:#ffa726; width:30px; height:30px; border-radius:8px; cursor:pointer;" data-color="#ffa726"></div>
-                <div class="color-opt" style="background:#ab47bc; width:30px; height:30px; border-radius:8px; cursor:pointer;" data-color="#ab47bc"></div>
-                <div class="color-opt" style="background:#78909c; width:30px; height:30px; border-radius:8px; cursor:pointer;" data-color="#78909c"></div>
+            <h3 id="modal-date-title" style="margin-top:0">Data</h3>
+            <input type="text" id="event-text" placeholder="Cosa facciamo?">
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px;" id="color-picker-el">
+                <div class="color-opt" style="background:#ef5350; width:25px; height:25px; border-radius:5px;" data-color="#ef5350"></div>
+                <div class="color-opt" style="background:#42a5f5; width:25px; height:25px; border-radius:5px;" data-color="#42a5f5"></div>
+                <div class="color-opt" style="background:#66bb6a; width:25px; height:25px; border-radius:5px;" data-color="#66bb6a"></div>
+                <div class="color-opt" style="background:#ffa726; width:25px; height:25px; border-radius:5px;" data-color="#ffa726"></div>
+                <div class="color-opt" style="background:#ab47bc; width:25px; height:25px; border-radius:5px;" data-color="#ab47bc"></div>
+                <div class="color-opt" style="background:#78909c; width:25px; height:25px; border-radius:5px;" data-color="#78909c"></div>
             </div>
-            <div id="existing-events" style="max-height: 150px; overflow-y: auto;"></div>
-            <button class="btn-add" onclick="saveEvent()">Salva Impegno</button>
+            <div id="existing-events" style="max-height: 120px; overflow-y: auto; border-top:1px solid #eee; padding-top:10px;"></div>
+            <button class="btn-add" onclick="saveEvent()">Salva</button>
         </div>
     </div>
 
     <div id="cd-modal-overlay" onclick="if(event.target == this) closeCdModal()">
         <div class="modal">
-            <h3 style="margin:0 0 15px 0; color:var(--primary-dark);">Imposta Data Speciale</h3>
-            <input type="text" id="cd-input-title" placeholder="Nome dell'evento (es. Anniversario)">
-            <input type="date" id="cd-input-date" style="margin-top:10px;">
-            <button class="btn-add" onclick="saveCountdown()">Salva Countdown</button>
+            <h3>Countdown</h3>
+            <input type="text" id="cd-input-title" placeholder="Titolo">
+            <input type="date" id="cd-input-date">
+            <button class="btn-add" onclick="saveCountdown()">Salva</button>
         </div>
     </div>
 
@@ -182,7 +174,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, set, onValue, push, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // CONFIGURAZIONE FIREBASE (Usa i tuoi dati originali)
         const firebaseConfig = {
             apiKey: "AIzaSyBM0ZrpNFGkfZ9uT3gLU80BOkxhVCZyXF0",
             authDomain: "love-4407a.firebaseapp.com",
@@ -198,58 +189,65 @@
         let allEvents = {};
         let currentViewDate = new Date();
         let selectedDate = "";
-        let selectedColor = "#ef5350"; // Colore predefinito (Rosso pastello)
+        let selectedColor = "#ef5350";
         let activeCdSlot = 1;
 
-        // Riferimenti Firebase
+        // Sync Note
         const rNote = ref(db, 'note');
+        onValue(rNote, (s) => document.getElementById('note-area').value = s.val() || "");
+        document.getElementById('note-area').oninput = (e) => set(rNote, e.target.value);
+
+        // Sync Spesa
         const rShop = ref(db, 'shop');
-        const rEv = ref(db, 'events');
-        const rCd = ref(db, 'countdowns');
-
-        // Note
-        const noteArea = document.getElementById('note-area');
-        onValue(rNote, (s) => noteArea.value = s.val() || "");
-        noteArea.oninput = (e) => set(rNote, e.target.value);
-
-        // Lista Spesa
-        window.addShop = () => {
-            const i = document.getElementById('shop-input');
-            if(i.value) { push(rShop, i.value); i.value = ''; }
-        };
-        window.delShop = (id) => remove(ref(db, `shop/${id}`));
+        window.addShop = () => { const i = document.getElementById('shop-input'); if(i.value) { push(rShop, i.value); i.value = ''; } };
         onValue(rShop, (s) => {
             const list = document.getElementById('shop-list'); list.innerHTML = '';
             const data = s.val();
-            for(let id in data) list.innerHTML += `<li style="display:flex; justify-content:space-between; align-items:center; background:white; padding:12px; border-radius:12px; margin-bottom:6px; box-shadow:0 2px 5px rgba(0,0,0,0.03);"><span>${data[id]}</span><span onclick="delShop('${id}')" style="color:#ef5350; font-weight:bold; cursor:pointer; padding-left:10px;">×</span></li>`;
+            for(let id in data) list.innerHTML += `<li>${data[id]} <b onclick="removeShop('${id}')" style="color:red; cursor:pointer;">×</b></li>`;
         });
+        window.removeShop = (id) => remove(ref(db, `shop/${id}`));
 
-        // Eventi Calendario
+        // Sync Calendario & FIX CANCELLAZIONE
+        const rEv = ref(db, 'events');
         onValue(rEv, (s) => { allEvents = s.val() || {}; renderCalendar(); });
+
         window.openModal = (dateStr) => {
             selectedDate = dateStr;
             document.getElementById('modal-overlay').style.display = 'flex';
-            document.getElementById('event-text').value = "";
-            const listDiv = document.getElementById('existing-events'); listDiv.innerHTML = "";
+            document.getElementById('modal-date-title').innerText = dateStr;
+            const listDiv = document.getElementById('existing-events');
+            listDiv.innerHTML = "";
             Object.entries(allEvents).forEach(([id, ev]) => {
-                if(ev.d === dateStr) listDiv.innerHTML += `<div style="padding:10px; background:#f8f9fa; border-radius:10px; margin-top:6px; display:flex; justify-content:space-between; font-size:0.85rem;"><span style="color:${ev.c}">${ev.t}</span><span onclick="remove(ref(db, 'events/${id}'))" style="color:#ef5350; font-weight:bold; cursor:pointer;">Elimina</span></div>`;
+                if(ev.d === dateStr) {
+                    listDiv.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:5px; font-size:0.8rem; background:#f0f0f0; padding:5px; border-radius:5px;">
+                        <span>${ev.t}</span><b onclick="deleteEv('${id}')" style="color:red; cursor:pointer;">Elimina</b>
+                    </div>`;
+                }
             });
         };
-        window.closeModal = () => document.getElementById('modal-overlay').style.display = 'none';
-        window.saveEvent = () => {
-            const text = document.getElementById('event-text').value;
-            if(text) { push(rEv, { t: text, d: selectedDate, c: selectedColor }); closeModal(); }
+
+        window.deleteEv = (id) => {
+            const itemRef = ref(db, `events/${id}`);
+            remove(itemRef).then(() => closeModal());
         };
-        // Color Picker Modal Logic
+
+        window.closeModal = () => document.getElementById('modal-overlay').style.display = 'none';
+        
+        window.saveEvent = () => {
+            const t = document.getElementById('event-text').value;
+            if(t) { push(rEv, { t: t, d: selectedDate, c: selectedColor }); document.getElementById('event-text').value=''; closeModal(); }
+        };
+
         document.querySelectorAll('.color-opt').forEach(opt => {
             opt.onclick = () => {
-                document.querySelectorAll('.color-opt').forEach(o => o.style.transform = 'scale(1)');
-                opt.style.transform = 'scale(1.2)';
-                selectedColor = opt.style.backgroundColor;
+                document.querySelectorAll('.color-opt').forEach(o => o.style.border = 'none');
+                opt.style.border = '2px solid black';
+                selectedColor = opt.dataset.color;
             };
         });
 
-        // Countdown
+        // Sync Countdown
+        const rCd = ref(db, 'countdowns');
         window.openCdModal = (slot) => { activeCdSlot = slot; document.getElementById('cd-modal-overlay').style.display='flex'; };
         window.closeCdModal = () => document.getElementById('cd-modal-overlay').style.display='none';
         window.saveCountdown = () => {
@@ -259,40 +257,40 @@
         };
         onValue(rCd, (s) => {
             const data = s.val() || {};
-            [1, 2].forEach(num => {
-                const item = data[`cd${num}`] || { t: `Evento Speciale ${num}`, d: '' };
-                document.getElementById(`cd-title-${num}`).innerText = item.t;
+            [1, 2].forEach(n => {
+                const item = data[`cd${n}`] || { t: 'Evento', d: '' };
+                document.getElementById(`cd-title-${n}`).innerText = item.t;
                 if(item.d) {
                     const diff = Math.ceil((new Date(item.d) - new Date()) / (1000 * 60 * 60 * 24));
-                    document.getElementById(`cd-days-${num}`).innerText = diff > 0 ? diff : 0;
+                    document.getElementById(`cd-days-${n}`).innerText = diff > 0 ? diff : 0;
                 }
             });
         });
 
-        // Calendario (Render)
-        const monthNames = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
-        const dayNames = ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"];
+        // Render Calendar
         window.changeMonth = (dir) => { currentViewDate.setMonth(currentViewDate.getMonth() + dir); renderCalendar(); };
-
         function renderCalendar() {
             const grid = document.getElementById('calendar-days');
             const year = currentViewDate.getFullYear(); const month = currentViewDate.getMonth();
-            document.getElementById('current-month-display').innerText = `${monthNames[month]} ${year}`;
+            document.getElementById('current-month-display').innerText = new Intl.DateTimeFormat('it-IT', { month: 'long', year: 'numeric' }).format(currentViewDate);
             grid.innerHTML = '';
-            dayNames.forEach(d => grid.innerHTML += `<div class="day-name">${d}</div>`);
-            const firstDay = new Date(year, month, 1).getDay();
-            const startOffset = firstDay === 0 ? 6 : firstDay - 1;
-            for(let i=0; i<startOffset; i++) grid.innerHTML += `<div class="day other-month"></div>`;
-            for(let d=1; d<=new Date(year, month + 1, 0).getDate(); d++) {
-                const dateStr = `${year}-${String(month+1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-                let evs = ''; Object.values(allEvents).forEach(ev => { if(ev.d === dateStr) evs += `<div class="event-chip" style="background:${ev.c}">${ev.t}</div>`; });
+            ["L","M","M","G","V","S","D"].forEach(d => grid.innerHTML += `<div class="day-name">${d}</div>`);
+            const first = new Date(year, month, 1).getDay();
+            const offset = first === 0 ? 6 : first - 1;
+            for(let i=0; i<offset; i++) grid.innerHTML += `<div class="day other-month"></div>`;
+            const daysInMonth = new Date(year, month+1, 0).getDate();
+            for(let d=1; d<=daysInMonth; d++) {
+                const ds = `${year}-${String(month+1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                let evHtml = '';
+                Object.values(allEvents).forEach(ev => { if(ev.d === ds) evHtml += `<div class="event-chip" style="background:${ev.c}">${ev.t}</div>`; });
                 const el = document.createElement('div');
-                el.className = `day ${new Date().toDateString() === new Date(year, month, d).toDateString() ? 'today' : ''}`;
-                el.innerHTML = `<span style="font-weight:600">${d}</span>${evs}`;
-                el.onclick = () => openModal(dateStr);
+                el.className = `day ${new Date().toDateString() === new Date(year,month,d).toDateString() ? 'today' : ''}`;
+                el.innerHTML = `<b>${d}</b>${evHtml}`;
+                el.onclick = () => openModal(ds);
                 grid.appendChild(el);
             }
         }
+        renderCalendar();
     </script>
 </body>
 </html>
