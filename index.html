@@ -308,34 +308,35 @@
 
             setSelectedColorUI(selectedColor);
 
-            // ── Note (Salvataggio automatico, notifica manuale) ────────────────
+            // ── Note (Salvataggio automatico, notifica manuale JSON) ────────────────
             const rNote = ref(db, 'note');
             const noteArea = document.getElementById('note-area');
             
-            // Sincronizza il testo tra i dispositivi senza far saltare il cursore
             onValue(rNote, s => {
                 if (document.activeElement !== noteArea) {
                     noteArea.value = s.val() || "";
                 }
             });
 
-            // Salva nel database ad ogni lettera digitata (NIENTE NOTIFICHE QUI)
             noteArea.oninput = e => {
                 set(rNote, e.target.value);
             };
 
-            // INVIA NOTIFICA SOLO SE SI PREME "AVVISA"
+            // INVIA NOTIFICA NOTE
             document.getElementById('btn-post-note').onclick = () => {
                 try {
                     const author = userEmail.includes('gabri') ? 'Gabri 👱‍♂️' : 'Meri 👩🏻';
                     let text = noteArea.value.trim();
                     if (text) {
                         const shortText = text.length > 50 ? text.substring(0, 50) + '...' : text;
-                        fetch('https://ntfy.sh/merigabri_calendariosegreto_17462819', {
+                        fetch('https://ntfy.sh/', {
                             method: 'POST',
-                            body: `${author} ha aggiornato le note 💌:\n"${shortText}"`
+                            body: JSON.stringify({
+                                topic: "merigabri_calendariosegreto_17462819",
+                                title: "MeriGabri Hub 💌",
+                                message: `${author} ha aggiornato le note:\n"${shortText}"`
+                            })
                         }).then(() => {
-                            // Cambia temporaneamente il testo del bottone per dare feedback all'utente
                             const btn = document.getElementById('btn-post-note');
                             const originalText = btn.innerText;
                             btn.innerText = "Inviata! ✅";
@@ -397,14 +398,19 @@
                     row.querySelector('.ev-del').onclick = () => {
                         remove(ref(db, `events/${id}`));
                         
-                        // --- NOTIFICA ELIMINAZIONE NTFY ---
+                        // --- NOTIFICA ELIMINAZIONE JSON ---
                         try {
                             const author = userEmail.includes('gabri') ? 'Gabri 👱‍♂️' : 'Meri 👩🏻';
                             const parts = dateStr.split('-');
                             const formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
-                            fetch('https://ntfy.sh/merigabri_calendariosegreto_17462819', {
+                            
+                            fetch('https://ntfy.sh/', {
                                 method: 'POST',
-                                body: `${author} ha ELIMINATO: "${ev.t}" dal ${formattedDate} 🗑️`
+                                body: JSON.stringify({
+                                    topic: "merigabri_calendariosegreto_17462819",
+                                    title: "MeriGabri Hub 🗑️",
+                                    message: `${author} ha ELIMINATO: "${ev.t}" dal ${formattedDate}`
+                                })
                             }).catch(() => {});
                         } catch (err) {}
                         // --- FINE NOTIFICA ---
@@ -427,7 +433,7 @@
                 renderExistingEvents(dateStr);
             };
 
-            // SALVATAGGIO EVENTO CON NOTIFICA NTFY
+            // SALVATAGGIO EVENTO CON NOTIFICA JSON
             document.getElementById('btn-save-ev').onclick = () => {
                 const t = document.getElementById('event-text').value.trim();
                 const ts = document.getElementById('event-time-start').value;
@@ -436,17 +442,20 @@
                 if (t) {
                     push(rEv, { t, d: selectedDate, c: selectedColor, ts: ts || '', te: te || '' });
                     
-                    // --- INIZIO INTEGRAZIONE NTFY ---
+                    // --- INIZIO INTEGRAZIONE NTFY JSON ---
                     try {
                         const author = userEmail.includes('gabri') ? 'Gabri 👱‍♂️' : 'Meri 👩🏻';
                         let timeText = ts ? ` (dalle ${ts}${te ? ' alle ' + te : ''})` : '';
                         const parts = selectedDate.split('-');
                         const dateStr = `${parts[2]}/${parts[1]}/${parts[0]}`;
-                        const notifText = `${author} ha aggiunto: "${t}" il ${dateStr}${timeText}`;
                         
-                        fetch('https://ntfy.sh/merigabri_calendariosegreto_17462819', {
+                        fetch('https://ntfy.sh/', {
                             method: 'POST',
-                            body: notifText
+                            body: JSON.stringify({
+                                topic: "merigabri_calendariosegreto_17462819",
+                                title: "MeriGabri Hub 🗓️",
+                                message: `${author} ha aggiunto: "${t}" il ${dateStr}${timeText}`
+                            })
                         }).catch(err => console.log('Errore invio notifica ntfy:', err));
                     } catch (err) {}
                     // --- FINE INTEGRAZIONE NTFY ---
