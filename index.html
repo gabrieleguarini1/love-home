@@ -26,7 +26,28 @@
         textarea, input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #eee; margin-bottom: 10px; font-family: inherit; font-size: 16px; }
         button { background: var(--primary-dark); color: white; border: none; border-radius: 12px; padding: 12px; width: 100%; font-weight: 600; cursor: pointer; }
         
-        /* Calendario */
+        /* Navigazione Calendario Fixata */
+        .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .cal-nav-group { display: flex; gap: 10px; }
+        .nav-btn { 
+            background: var(--primary); 
+            color: white; 
+            border: none; 
+            border-radius: 50%; 
+            width: 36px; 
+            height: 36px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            box-shadow: 0 4px 10px rgba(126, 87, 194, 0.2);
+            font-size: 0.85rem;
+            padding: 0;
+            line-height: 1;
+        }
+        .nav-btn:active { transform: scale(0.9); }
+
+        /* Calendario Grid */
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
         .day { min-height: 72px; background: white; border-radius: 10px; padding: 5px 4px; font-size: 0.72rem; cursor: pointer; display: flex; flex-direction: column; border: 1px solid transparent; }
         .day:hover { background: #f0ebff; }
@@ -40,10 +61,8 @@
         .coin div { width: 100%; height: 100%; border-radius: 50%; position: absolute; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; border: 4px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .side-meri { background: #e91e63; color: white; }
         .side-gabri { background: #1565c0; color: white; transform: rotateY(180deg); }
-        .flipping { animation: flip 0.2s infinite linear; }
-        @keyframes flip { 0% { transform: rotateY(0); } 100% { transform: rotateY(180deg); } }
 
-        /* Countdown & Altri */
+        /* Countdown & Modali */
         .countdown-container { display: flex; gap: 10px; }
         .countdown-card { flex: 1; background: white; padding: 12px; border-radius: 20px; text-align: center; cursor: pointer; }
         .cd-number { font-size: 1.6rem; font-weight: 600; color: var(--primary); display: block; }
@@ -82,10 +101,12 @@
         </div>
 
         <div class="card">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                <button id="prevMonth" style="border:none; background:none; font-size:1.4rem; width:auto; padding:0 8px;">‹</button>
-                <h2 id="current-month-display" style="margin:0; font-size:1.05rem;">Mese</h2>
-                <button id="nextMonth" style="border:none; background:none; font-size:1.4rem; width:auto; padding:0 8px;">›</button>
+            <div class="cal-header">
+                <h2 id="current-month-display" style="margin:0; font-size:1.1rem; flex-grow: 1;">Mese</h2>
+                <div class="cal-nav-group">
+                    <button id="prevMonth" class="nav-btn">◀</button>
+                    <button id="nextMonth" class="nav-btn">▶</button>
+                </div>
             </div>
             <div class="calendar-grid" id="calendar-days"></div>
         </div>
@@ -175,38 +196,29 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        // --- FUNZIONE NOTIFICA SICURA E PULITISSIMA ---
-        // Usiamo i parametri nell'URL: così bypassiamo la sicurezza rigida del telefono 
-        // ed evitiamo di mostrare "ntfy.sh/..." a schermo!
+        // --- NOTIFICHE ---
         function inviaNotifica(titolo, messaggio, tag) {
-            // EncodeURIComponent serve a far digerire spazi e faccine all'URL
             const url = `https://ntfy.sh/merigabri_calendariosegreto_17462819?title=${encodeURIComponent(titolo)}&tags=${tag}`;
-            fetch(url, {
-                method: 'POST',
-                body: messaggio
-            }).catch(e => console.log("Errore invio notifica:", e));
+            fetch(url, { method: 'POST', body: messaggio }).catch(e => console.log("Errore:", e));
         }
 
-        // --- TESTA O CROCE LOGIC ---
+        // --- MONETA (FIXATA) ---
         const btnFlip = document.getElementById('btn-flip');
         const coin = document.getElementById('coin');
         const flipResult = document.getElementById('flip-result');
+        let currentRotation = 0;
 
         btnFlip.onclick = () => {
             btnFlip.disabled = true;
             flipResult.innerText = "Lancio in corso...";
-            const result = Math.random() < 0.5 ? 'Meri' : 'Gabri';
+            const isMeri = Math.random() < 0.5;
+            const result = isMeri ? 'Meri' : 'Gabri';
+            const spins = 5; 
+            const baseRotation = Math.floor(currentRotation / 360) * 360; 
+            currentRotation = isMeri ? (baseRotation + (spins * 360)) : (baseRotation + (spins * 360) + 180);
             
-            // Animazione
-            coin.style.transition = 'none';
-            coin.style.transform = 'rotateY(0)';
-            
-            setTimeout(() => {
-                coin.style.transition = 'transform 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-                const rotations = 10; // Quanti giri fa
-                const extraDeg = result === 'Meri' ? 0 : 180;
-                coin.style.transform = `rotateY(${rotations * 180 + extraDeg}deg)`;
-            }, 50);
+            coin.style.transition = 'transform 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            coin.style.transform = `rotateY(${currentRotation}deg)`;
 
             setTimeout(() => {
                 flipResult.innerText = `L'ha pijatander ${result}! ✨`;
@@ -214,7 +226,7 @@
             }, 1600);
         };
 
-        // --- RESTO DELL'APP ---
+        // --- AUTH ---
         const USER_DEFAULT_COLORS = {
             "gabrieleguarini1@gmail.com": "#1565c0",
             "m.vittoriapiovaccari@gmail.com": "#e91e63"
@@ -250,19 +262,13 @@
             let selectedDate = "";
             let selectedColor = USER_DEFAULT_COLORS[userEmail] || "#ef5350";
 
-            // Gestione Note
+            // Note
             const rNote = ref(db, 'note');
             const noteArea = document.getElementById('note-area');
             onValue(rNote, s => { if (document.activeElement !== noteArea) noteArea.value = s.val() || ""; });
             noteArea.oninput = e => set(rNote, e.target.value);
-
-            // PULSANTE AVVISA NOTE
             document.getElementById('btn-post-note').onclick = () => {
-                const text = noteArea.value.trim();
-                if (text) {
-                    // Manda la notifica pulita con titolo "MeriGabri Hub" e tag memo
-                    inviaNotifica("MeriGabri Hub", `${author} ha scritto: "${text.substring(0,60)}..."`, "memo");
-                }
+                if (noteArea.value.trim()) inviaNotifica("MeriGabri Hub", `${author} ha scritto: "${noteArea.value.substring(0,60)}..."`, "memo");
             };
 
             // Spesa
@@ -282,25 +288,9 @@
                 }
             });
 
-            // Gestione Colori nel Modale
-            document.querySelectorAll('.color-opt').forEach(opt => {
-                opt.onclick = () => {
-                    document.querySelectorAll('.color-opt').forEach(o => o.classList.remove('selected'));
-                    opt.classList.add('selected');
-                    selectedColor = opt.dataset.color;
-                };
-                if(opt.dataset.color === selectedColor) {
-                    opt.classList.add('selected');
-                }
-            });
-
-            // Calendario ed Eventi
+            // Calendario
             const rEv = ref(db, 'events');
-            onValue(rEv, s => { 
-                allEvents = s.val() || {}; 
-                renderCalendar(); 
-                if(selectedDate !== "") renderExistingEvents(selectedDate);
-            });
+            onValue(rEv, s => { allEvents = s.val() || {}; renderCalendar(); if(selectedDate) renderExistingEvents(selectedDate); });
 
             window.openModal = (ds) => {
                 selectedDate = ds;
@@ -320,8 +310,7 @@
                     item.innerHTML = `<span>${e.t}</span><span style="color:red; cursor:pointer; font-weight:bold;">X</span>`;
                     item.querySelector('span:last-child').onclick = () => {
                         remove(ref(db, `events/${id}`));
-                        // Notifica per evento rimosso
-                        inviaNotifica("MeriGabri Hub", `${author} ha eliminato l'evento:\n"${e.t}" del ${ds}`, "wastebasket");
+                        inviaNotifica("MeriGabri Hub", `${author} ha eliminato: "${e.t}" del ${ds}`, "wastebasket");
                     };
                     div.appendChild(item);
                 });
@@ -330,54 +319,25 @@
             document.getElementById('btn-save-ev').onclick = () => {
                 const t = document.getElementById('event-text').value;
                 if (t) {
-                    push(rEv, { 
-                        t, d: selectedDate, c: selectedColor, 
-                        ts: document.getElementById('event-time-start').value,
-                        te: document.getElementById('event-time-end').value
-                    });
-                    
-                    // Notifica per nuovo evento
-                    inviaNotifica("MeriGabri Hub", `${author} ha aggiunto:\n"${t}" per il ${selectedDate}`, "calendar");
-
-                    document.getElementById('event-text').value = "";
+                    push(rEv, { t, d: selectedDate, c: selectedColor, ts: document.getElementById('event-time-start').value, te: document.getElementById('event-time-end').value });
+                    inviaNotifica("MeriGabri Hub", `${author} ha aggiunto: "${t}" per il ${selectedDate}`, "calendar");
                     document.getElementById('modal-overlay').style.display = 'none';
                 }
             };
+            document.getElementById('btn-close-modal').onclick = () => document.getElementById('modal-overlay').style.display = 'none';
 
-            document.getElementById('btn-close-modal').onclick = () => {
-                document.getElementById('modal-overlay').style.display = 'none';
-                selectedDate = "";
-            };
-
-            // Countdown Logic
+            // Countdown
             const rCd = ref(db, 'countdowns');
             let activeCd = 1;
-
-            document.getElementById('cd1').onclick = () => {
-                activeCd = 1;
-                document.getElementById('cd-modal-overlay').style.display = 'flex';
-            };
-            
-            document.getElementById('cd2').onclick = () => {
-                activeCd = 2;
-                document.getElementById('cd-modal-overlay').style.display = 'flex';
-            };
-
+            document.getElementById('cd1').onclick = () => { activeCd = 1; document.getElementById('cd-modal-overlay').style.display = 'flex'; };
+            document.getElementById('cd2').onclick = () => { activeCd = 2; document.getElementById('cd-modal-overlay').style.display = 'flex'; };
             document.getElementById('btn-save-cd').onclick = () => {
                 const t = document.getElementById('cd-input-title').value;
                 const d = document.getElementById('cd-input-date').value;
-                if(t && d) {
-                    set(ref(db, `countdowns/cd${activeCd}`), {t, d});
-                }
-                document.getElementById('cd-modal-overlay').style.display = 'none';
-                document.getElementById('cd-input-title').value = "";
-                document.getElementById('cd-input-date').value = "";
-            };
-
-            document.getElementById('btn-close-cd').onclick = () => {
+                if(t && d) set(ref(db, `countdowns/cd${activeCd}`), {t, d});
                 document.getElementById('cd-modal-overlay').style.display = 'none';
             };
-
+            document.getElementById('btn-close-cd').onclick = () => document.getElementById('cd-modal-overlay').style.display = 'none';
             onValue(rCd, s => {
                 const data = s.val() || {};
                 [1,2].forEach(n => {
@@ -390,7 +350,7 @@
                 });
             });
 
-            // Navigazione Mese Calendario
+            // Navigazione
             document.getElementById('prevMonth').onclick = () => { currentViewDate.setMonth(currentViewDate.getMonth() - 1); renderCalendar(); };
             document.getElementById('nextMonth').onclick = () => { currentViewDate.setMonth(currentViewDate.getMonth() + 1); renderCalendar(); };
 
@@ -401,32 +361,21 @@
                 document.getElementById('current-month-display').innerText = new Intl.DateTimeFormat('it-IT', { month:'long', year:'numeric' }).format(currentViewDate);
                 grid.innerHTML = '';
                 ["L","M","M","G","V","S","D"].forEach(d => grid.innerHTML += `<div style="text-align:center; font-size:0.6rem; font-weight:700; color:#999;">${d}</div>`);
-                
                 const firstDay = new Date(year, month, 1).getDay();
                 const offset = firstDay === 0 ? 6 : firstDay - 1;
                 for (let i = 0; i < offset; i++) grid.innerHTML += `<div></div>`;
-
                 const days = new Date(year, month + 1, 0).getDate();
                 for (let d = 1; d <= days; d++) {
                     const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
                     const el = document.createElement('div');
                     el.className = 'day';
-                    
-                    // Highlight today
-                    const todayStr = new Date().toISOString().split('T')[0];
-                    if (ds === todayStr) {
-                        el.classList.add('today');
-                    }
-
+                    if (ds === new Date().toISOString().split('T')[0]) el.classList.add('today');
                     el.innerHTML = `<span class="day-num">${d}</span>`;
-                    Object.values(allEvents).filter(e => e.d === ds).forEach(e => {
-                        el.innerHTML += `<div class="event-chip" style="background:${e.c}">${e.t}</div>`;
-                    });
+                    Object.values(allEvents).filter(e => e.d === ds).forEach(e => { el.innerHTML += `<div class="event-chip" style="background:${e.c}">${e.t}</div>`; });
                     el.onclick = () => window.openModal(ds);
                     grid.appendChild(el);
                 }
             }
-
             renderCalendar();
         }
     </script>
