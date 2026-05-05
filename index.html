@@ -5,15 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MeriGabri Hub</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- IMPOSTAZIONI WEB APP IPHONE -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="MeriGabri">
     
-	<link rel="icon" type="image/png" href="imagemg.png?v=2">
+    <!-- FAVICON STANDARD -->
+    <link rel="icon" type="image/png" href="https://github.com/gabrieleguarini1/love-home/blob/main/imagemg.png?raw=true">
 
-	<link rel="apple-touch-icon" href="imagemg.png?v=2">
+    <!-- ICONE IPHONE / APPLE TOUCH ICON -->
+    <link rel="apple-touch-icon" href="https://github.com/gabrieleguarini1/love-home/blob/main/imagemg.png?raw=true">
+    <link rel="apple-touch-icon" sizes="152x152" href="https://github.com/gabrieleguarini1/love-home/blob/main/imagemg.png?raw=true">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://github.com/gabrieleguarini1/love-home/blob/main/imagemg.png?raw=true">
+    <link rel="apple-touch-icon" sizes="167x167" href="https://github.com/gabrieleguarini1/love-home/blob/main/imagemg.png?raw=true">
 
-	<link rel="apple-touch-icon" sizes="180x180" href="imagemg.png?v=2">
     <style>
         :root { --bg-color: #f3e5f5; --primary: #7e57c2; --primary-dark: #5e35b1; --text-dark: #2d3436; --glass: rgba(255, 255, 255, 0.9); }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
@@ -205,7 +211,7 @@
             fetch(url, { method: 'POST', body: messaggio }).catch(e => console.log("Errore:", e));
         }
 
-        // --- MONETA (FIXATA) ---
+        // --- MONETA ---
         const btnFlip = document.getElementById('btn-flip');
         const coin = document.getElementById('coin');
         const flipResult = document.getElementById('flip-result');
